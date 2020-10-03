@@ -18,7 +18,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        List<String> alunos = new ArrayList<>(Arrays.asList("Alex", "Fran", "José"));
+        List<String> alunos = new ArrayList<>(Arrays.asList("Alex", "Fran", "José", "Ana"));
 
         ListView alunosView = findViewById(R.id.activity_main_lista_de_alunos);
         alunosView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, alunos));
