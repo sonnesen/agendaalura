@@ -16,7 +16,7 @@ import br.com.alura.agenda.R;
 import br.com.alura.agenda.dao.AlunoDAO;
 import br.com.alura.agenda.model.Aluno;
 
-public class ListaAlunosActivity extends AppCompatActivity {
+public class ListaAlunosActivity extends AppCompatActivity implements BaseActivity {
 
     public static final String TITULO_APPBAR = "Lista de alunos";
     private AlunoDAO alunoDAO = new AlunoDAO();
@@ -32,11 +32,11 @@ public class ListaAlunosActivity extends AppCompatActivity {
     private void configuraFabNovoAluno() {
         FloatingActionButton botaoNovoAluno = findViewById(R.id.activity_lista_alunos_fab_novo_aluno);
         botaoNovoAluno.setOnClickListener((view) -> {
-            abreFormularioAlunoActivity();
+            abreFormularioNovoAluno();
         });
     }
 
-    private void abreFormularioAlunoActivity() {
+    private void abreFormularioNovoAluno() {
         startActivity(new Intent(this, FormularioAlunoActivity.class));
     }
 
@@ -49,14 +49,26 @@ public class ListaAlunosActivity extends AppCompatActivity {
     private void configuraLista() {
         ListView alunosView = findViewById(R.id.activity_lista_alunos_listview);
         final List<Aluno> alunos = alunoDAO.getAll();
+        configuraAdapter(alunosView, alunos);
+        configuraListenerDeCliquePorItem(alunosView);
+    }
+
+    private void configuraListenerDeCliquePorItem(ListView alunosView) {
+        alunosView.setOnItemClickListener((parent, view, position, id) -> {
+            Aluno alunoSelecionado = (Aluno) parent.getItemAtPosition(position);
+            abreFormularioAtualizaAluno(alunoSelecionado);
+        });
+    }
+
+    private void abreFormularioAtualizaAluno(Aluno aluno) {
+        Intent vaiParaFormularioActivity = new Intent(ListaAlunosActivity.this, FormularioAlunoActivity.class);
+        vaiParaFormularioActivity.putExtra(CHAVE_ALUNO, aluno);
+        startActivity(vaiParaFormularioActivity);
+    }
+
+    private void configuraAdapter(ListView alunosView, List<Aluno> alunos) {
         alunosView.setAdapter(new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1,
                 alunos));
-        alunosView.setOnItemClickListener((parent, view, position, id) -> {
-            Aluno alunoSelecionado = alunos.get(position);
-            Intent vaiParaFormularioActivity = new Intent(ListaAlunosActivity.this, FormularioAlunoActivity.class);
-            vaiParaFormularioActivity.putExtra("aluno", alunoSelecionado);
-            startActivity(vaiParaFormularioActivity);
-        });
     }
 }

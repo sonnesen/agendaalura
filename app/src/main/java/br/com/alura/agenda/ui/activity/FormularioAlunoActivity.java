@@ -11,19 +11,20 @@ import br.com.alura.agenda.R;
 import br.com.alura.agenda.dao.AlunoDAO;
 import br.com.alura.agenda.model.Aluno;
 
-public class FormularioAlunoActivity extends AppCompatActivity {
+public class FormularioAlunoActivity extends AppCompatActivity implements BaseActivity {
 
-    public static final String TITULO_APPBAR = "Novo aluno";
+    private static final String TITULO_APPBAR_NOVO_ALUNO = "Novo aluno";
+    private static final String TITULO_APPBAR_MODIFICA_ALUNO = "Modifica aluno";
+    private final AlunoDAO alunoDAO = new AlunoDAO();
     private EditText campoNome;
     private EditText campoTelefone;
     private EditText campoEmail;
-    private final AlunoDAO alunoDAO = new AlunoDAO();
+    private Aluno aluno;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formulario_aluno);
-        setTitle(TITULO_APPBAR);
         inicializaCampos();
         configuraBotaoSalvar();
     }
@@ -31,8 +32,8 @@ public class FormularioAlunoActivity extends AppCompatActivity {
     private void configuraBotaoSalvar() {
         Button botaoSalvar = findViewById(R.id.activity_formulario_aluno_botao_salvar);
         botaoSalvar.setOnClickListener((view) -> {
-            Aluno alunoCriado = criaAluno();
-            salva(alunoCriado);
+            preencheDadosAluno();
+            salva();
         });
     }
 
@@ -42,24 +43,34 @@ public class FormularioAlunoActivity extends AppCompatActivity {
         campoEmail = findViewById(R.id.activity_formulario_aluno_email);
 
         Intent dados = getIntent();
-        Aluno aluno = (Aluno) dados.getParcelableExtra("aluno");
+        aluno = (Aluno) dados.getParcelableExtra(CHAVE_ALUNO);
 
         if (aluno != null) {
+            setTitle(TITULO_APPBAR_MODIFICA_ALUNO);
             campoNome.setText(aluno.getNome());
             campoTelefone.setText(aluno.getTelefone());
             campoEmail.setText(aluno.getEmail());
+        } else {
+            setTitle(TITULO_APPBAR_NOVO_ALUNO);
+            aluno = new Aluno();
         }
     }
 
-    private void salva(Aluno aluno) {
-        alunoDAO.salva(aluno);
+    private void salva() {
+        if (aluno.getId() == null)
+            alunoDAO.cria(aluno);
+        else
+            alunoDAO.atualiza(aluno);
         finish();
     }
 
-    private Aluno criaAluno() {
+    private void preencheDadosAluno() {
         String nome = campoNome.getText().toString();
         String telefone = campoTelefone.getText().toString();
         String email = campoEmail.getText().toString();
-        return new Aluno(nome, telefone, email);
+
+        aluno.setNome(nome);
+        aluno.setTelefone(telefone);
+        aluno.setEmail(email);
     }
 }
