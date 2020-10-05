@@ -24,6 +24,10 @@ public class AlunoDAO {
         }
     }
 
+    public void remove(Aluno aluno) {
+        alunos.remove(aluno.getId());
+    }
+
     public List<Aluno> getAll() {
         return new ArrayList<>(alunos.values());
     }
