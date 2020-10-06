@@ -2,9 +2,14 @@ package br.com.alura.agenda.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -27,6 +32,23 @@ public class ListaAlunosActivity extends AppCompatActivity implements BaseActivi
         setTitle(TITULO_APPBAR);
         configuraFabNovoAluno();
         configuraLista();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.activity_lista_alunos_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.activity_lista_alunos_menu_remover) {
+            AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+            Aluno alunoSelecionado = adapter.getItem(menuInfo.position);
+            removeAluno(alunoSelecionado);
+        }
+
+        return super.onContextItemSelected(item);
     }
 
     private void configuraFabNovoAluno() {
@@ -55,15 +77,7 @@ public class ListaAlunosActivity extends AppCompatActivity implements BaseActivi
         ListView alunosView = findViewById(R.id.activity_lista_alunos_listview);
         configuraAdapter(alunosView);
         configuraListenerDeCliquePorItem(alunosView);
-        configuraListenerDeCliqueLongoPorItem(alunosView);
-    }
-
-    private void configuraListenerDeCliqueLongoPorItem(ListView alunosView) {
-        alunosView.setOnItemLongClickListener((parent, view, position, id) -> {
-            Aluno alunoSelecionado = (Aluno) parent.getItemAtPosition(position);
-            removeAluno(alunoSelecionado);
-            return true;
-        });
+        registerForContextMenu(alunosView);
     }
 
     private void removeAluno(Aluno alunoSelecionado) {
@@ -71,7 +85,7 @@ public class ListaAlunosActivity extends AppCompatActivity implements BaseActivi
         adapter.remove(alunoSelecionado);
     }
 
-    private void configuraListenerDeCliquePorItem(ListView alunosView) {
+    private void configuraListenerDeCliquePorItem(ListView alunosView)  {
         alunosView.setOnItemClickListener((parent, view, position, id) -> {
             Aluno alunoSelecionado = (Aluno) parent.getItemAtPosition(position);
             abreFormularioAtualizaAluno(alunoSelecionado);
