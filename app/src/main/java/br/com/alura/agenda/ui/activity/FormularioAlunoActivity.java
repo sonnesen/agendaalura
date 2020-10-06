@@ -2,9 +2,11 @@ package br.com.alura.agenda.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import br.com.alura.agenda.R;
@@ -26,15 +28,20 @@ public class FormularioAlunoActivity extends AppCompatActivity implements BaseAc
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formulario_aluno);
         inicializaCampos();
-        configuraBotaoSalvar();
     }
 
-    private void configuraBotaoSalvar() {
-        Button botaoSalvar = findViewById(R.id.activity_formulario_aluno_botao_salvar);
-        botaoSalvar.setOnClickListener((view) -> {
-            preencheDadosAluno();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_formulario_aluno_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.activity_formulario_aluno_menu_salvar) {
             salva();
-        });
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void inicializaCampos() {
@@ -57,6 +64,7 @@ public class FormularioAlunoActivity extends AppCompatActivity implements BaseAc
     }
 
     private void salva() {
+        preencheDadosAluno();
         if (aluno.getId() == null)
             alunoDAO.cria(aluno);
         else
